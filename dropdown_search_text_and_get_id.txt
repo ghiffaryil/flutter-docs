@@ -1,0 +1,104 @@
+OPSI 1 :
+
+List listDataPengguna = [
+	{
+	  Id_Pengguna: "1",
+	  Nama_Depan: "Ryan",
+	  Nama_Belakang: "Moro",
+	  Nama_Organisasi: "Techindo Global",
+	  Nomor_Telpon: "0812312312"
+	},
+	{
+	  Id_Pengguna: "2",
+	  Nama_Depan: "Ary",
+	  Nama_Belakang: "Bern",
+	  Nama_Organisasi: "Secure Solution",
+	  Nomor_Telpon: "081111111111"
+	}
+]
+
+DropdownSearch(
+  items: listDataPengguna
+    .map((e) =>
+      "${e['Nama_Depan']} ${e['Nama_Belakang']} - ${e['Nama_Organisasi']} - ${e['Nomor_Telpon']}"
+    )
+    .toList(),
+  popupProps: PopupProps.dialog(
+    showSelectedItems: false,
+    showSearchBox: true,
+  ),
+  onChanged: (value) {
+    // Retrieve the selected item's Id_Pengguna value here
+    final selectedPengguna = listDataPengguna.firstWhere(
+      (e) =>
+        "${e['Nama_Depan']} ${e['Nama_Belakang']} - ${e['Nama_Organisasi']} - ${e['Nomor_Telpon']}" == value,
+      orElse: () => null,
+    );
+    if (selectedPengguna != null) {
+      final idPengguna = selectedPengguna['Id_Pengguna'];
+      print("Selected Id_Pengguna: $idPengguna");
+    }
+  },
+),
+
+
+
+
+OPSI 2 :
+class Cities {
+  int id;
+  String name;
+
+  Cities(this.id, this.name);
+
+  Cities.fromMap(Map<String, dynamic> json) {
+    this.id = json["id"];
+    this.name = json["name"];
+  }
+
+  Map<String, dynamic> toMap() => {
+        'id': null,
+        'name': name,
+      };
+}
+
+
+Future<List<String>> getCitiesList() async {
+  Database db = await instance.database;
+
+  final citiesData = await db.query(tblCities);
+
+  if (citiesData.length == 0) return null;
+
+  return citiesData.map((Map<String, dynamic> row) {
+    return row["name"] as String;
+  }).toList();
+}
+
+//initialize these at top
+List<String> _citiesList = <String>[];
+String _city;
+
+void _getCitiesList() async {
+  final List<String> _list = await databaseHelper.getCitiesList();
+  setState(() {
+    _citiesList = _list;
+  });
+}
+
+
+DropdownButtonHideUnderline(
+    child: DropdownButton<String>(
+      value: _city,
+      items: _citiesList.map((String value) {
+        return DropdownMenuItem<String>(
+          value: value,
+          child: Text(value),
+        );
+      }).toList(),
+      onChanged: (String newValue) {
+      setState(() {
+          _city = newValue;
+      });
+      },
+)),

@@ -1,0 +1,90 @@
+
+//FUNGSI BACA DATA
+Future readListEstimasi() async {
+    setState(() {
+      isLoadingMore = true;
+    });
+
+    print('READ LIST ESTIMASI');
+    print('Page :  $Page');
+    // print('Filter Text : $Inputan_Filter_Text');
+    try {
+      final response = await http.post(
+        Uri.parse(URL_API + "api/alva_store/v1/estimasi/read_list.php"),
+        body: {
+          "Id_Pengguna": Id_Pengguna,
+          "Organisasi_Kode": Organisasi_Kode,
+          "Halaman_Data": '$Page',
+          "Limit_Data": '15',
+          "Filter_Text": '',
+        },
+      ).then((value) {
+        print(value.statusCode);
+
+        if (value.statusCode == 200) {
+          var data = jsonDecode(value.body);
+          print(data['Data']);
+          if (data['Status'] == "Sukses") {
+            setState(() {
+              isLoadingMore = false;
+              listDataEstimasi = listDataEstimasi + data['Data'];
+            });
+          } else {
+            setState(() {
+              isLoadingMore = false;
+            });
+          }
+        } else {
+          setState(() {
+            isLoadingMore = false;
+          });
+        }
+      });
+    } catch (e) {
+      print(e);
+    }
+    setState(() {
+      isLoadingMore = false;
+    });
+  }
+
+
+
+
+// FUNGSI LOAD MORE BERDASARKAN SCROLL LISTENER
+// FUNGSI LOAD MORE
+  Future<void> _scrollListener() async {
+    print('Page Saat ini => $Page');
+    if (scrollController.position.pixels ==
+        scrollController.position.maxScrollExtent) {
+      Page = Page + 1;
+      print('Page Selanjutnya => $Page');
+      await readListEstimasi();
+    }
+  }
+
+
+
+
+
+-----------
+// Fungsi Listview Builder 
+child: ListView.builder(
+                    shrinkWrap: true,
+                    controller: scrollController,
+                    scrollDirection: Axis.vertical,
+                    // physics: const NeverScrollableScrollPhysics(),
+                    itemCount: isLoadingMore
+                        ? listDataEstimasi.length + 1
+                        : listDataEstimasi.length,
+                    itemBuilder: (BuildContext context, int index) {
+			if (index < listDataEstimasi.length) {
+                        	return Card();
+			} else {
+	                        return Padding(
+        	                  padding: EdgeInsets.only(top: 25.0, bottom: 20.0),
+                	          child: Center(
+                        	    child: CircularProgressIndicator(),
+	                          ),
+	                        );
+	                      }

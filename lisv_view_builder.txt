@@ -1,0 +1,18 @@
+List listDataEstimasi = [];
+listDataEstimasi = data['Data'];
+
+child: ListView.builder(
+                    shrinkWrap: true,
+                    controller: scrollController,
+                    scrollDirection: Axis.vertical,
+                    // physics: const NeverScrollableScrollPhysics(),
+                    itemCount: listDataEstimasi.length,
+                    itemBuilder: (BuildContext context, int index) {
+                        return Card(
+                          elevation: 4,
+                          child: InkWell()
+			);
+			}
+JIKA INGIN MENGGUNAKAN SEPARATOR
+// separatorBuilder: (BuildContext context, int index) => const Divider(),
+)

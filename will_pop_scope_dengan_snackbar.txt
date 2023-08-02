@@ -1,0 +1,22 @@
+var presscount = 0;
+@override
+  Widget build(BuildContext context) {
+    return WillPopScope(
+      onWillPop: () async {
+        presscount++;
+
+        if (presscount == 2) {
+          exit(0);
+        } else {
+          var snackBar =
+              SnackBar(content: Text('press another time to exit from app'));
+          ScaffoldMessenger.of(context).showSnackBar(snackBar);
+          return false;
+        }
+      },
+      child: Scaffold(
+        backgroundColor: Colors.red,
+        body: Container(),
+      ),
+    );
+  }

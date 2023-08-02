@@ -1,0 +1,42 @@
+
+        onWillPop: () async {
+          return await showDialog(
+            context: context,
+            builder: (context) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12.0),
+              ),
+              clipBehavior: Clip.antiAliasWithSaveLayer,
+              backgroundColor: Colors.white,
+              actionsPadding: EdgeInsets.symmetric(horizontal: 12.0),
+              title: Text('Perhatian!'),
+              content: Text(
+                'Anda yakin ingin menutup aplikasi Quotation POS Mobile?',
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Colors.black.withOpacity(0.7),
+                ),
+              ),
+              actions: <Widget>[
+                TextButton(
+                    child: Text(
+                      'Ya',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onPressed: () {
+                      print("Return True");
+                      exit(0);
+                    }),
+                TextButton(
+                    child: Text(
+                      'Tidak',
+                      style: TextStyle(color: Colors.red),
+                    ),
+                    onPressed: () {
+                      print("Return False");
+                      Navigator.of(context).pop(false);
+                    }),
+              ],
+            ),
+          );
+        },
