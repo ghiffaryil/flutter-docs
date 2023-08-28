@@ -1,0 +1,195 @@
+// ignore_for_file: non_constant_identifier_names, prefer_typing_uninitialized_variables, prefer_const_constructors, avoid_print
+
+import 'dart:convert';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
+import 'package:flutter/material.dart';
+// import 'package:nfc_manager/nfc_manager.dart';
+
+class ScanCardNFC extends StatefulWidget {
+  const ScanCardNFC({super.key});
+  @override
+  State<StatefulWidget> createState() => ScanCardNFCState();
+}
+
+class ScanCardNFCState extends State<ScanCardNFC> {
+  //Variable Login
+  var U_Id_Pengguna;
+  var U_Organisasi_Kode;
+
+  var Server;
+  var Ip_Address;
+  var URL_API;
+
+  var Inputan_Ip_Address_Default;
+  var Inputan_Server_Default;
+
+  // PATROL POINT WORK ORDER
+  var Id_Patrol_Point_Work_Order = "";
+  var Urutan = "";
+  var Patrol_Status = "";
+
+  // PATROL ROUTE
+  var Patrol_Route_Name = "";
+  var Patrol_Route_Number = "";
+  var Patrol_Pattern = "";
+  var Total_Patrol_Duration = '';
+  var Foto_Required = '';
+
+  // PATROL POINT
+  var Patrol_Point_Number = "";
+  var Patrol_Point_Type = "";
+
+  // LOCATION
+  var Id_Location = '';
+  var Location_Name = '';
+  var Location_Number = '';
+
+  var Status = '';
+  var Keterangan = '';
+  var grab_nfc_id = '';
+
+  ValueNotifier<dynamic> result = ValueNotifier(null);
+
+  @override
+  void initState() {
+    Inputan_Ip_Address_Default = 'http://192.168.1.11:1301/';
+    Inputan_Server_Default = 'Cloud';
+    super.initState();
+    _tagRead();
+  }
+
+  // UPDATE WORK ORDER
+  Future submitUpdate(nfc_id) async {
+    print('NFC ID => ');
+    print(nfc_id);
+
+    final response = await http.post(
+      Uri.parse(Inputan_Ip_Address_Default +
+          "api/patrol_management/v1/patrol_point/update_patrol_point_work_order_dengan_nfc.php"),
+      body: {
+        "Id_Pengguna": '2',
+        "Organisasi_Kode": '20211016225942',
+        "Id_Patrol_Route": '11',
+        "Id_Work_Order": '320',
+        "NFC_Id": '$nfc_id',
+      },
+    ).then((value) {
+      print('Status Code => ${value.statusCode}');
+      print('DISINI => ');
+      var data = jsonDecode(value.body);
+      print(data);
+      if (data['Status'] == "Sukses") {
+        // ALERT BERHASIL
+        setState(() {
+          Status = data['Status'];
+          Keterangan = data['Keterangan'];
+        });
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+                  title: Text('Berhasil menyelesaikan Patrol Point'),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text(Status),
+                        Text(Keterangan),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('Ok'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ));
+      } else {
+        // ALERT GAGAL
+        setState(() {
+          Status = data['Status'];
+          Keterangan = data['Keterangan_Error'][0];
+        });
+        showDialog(
+            context: context,
+            builder: (BuildContext context) => AlertDialog(
+                  title: Text('Gagal Update Patrol Point'),
+                  content: SingleChildScrollView(
+                    child: ListBody(
+                      children: <Widget>[
+                        Text(Status),
+                        Text(Keterangan),
+                      ],
+                    ),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      child: const Text('Ok'),
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                    ),
+                  ],
+                ));
+      }
+      // REFRESH FUNGSI TAG READ
+      _tagRead();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        appBar: AppBar(
+            leading: IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: Icon(Icons.arrow_back),
+            ),
+            title: const Text('SCAN NFC')),
+        body: SafeArea(
+          child: FutureBuilder<bool>(
+            future: NfcManager.instance.isAvailable(),
+            builder: (context, ss) => ss.data != true
+                ? Center(child: Text('NfcManager.isAvailable(): ${ss.data}'))
+                : Flex(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    direction: Axis.vertical,
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        child: Container(
+                          margin: const EdgeInsets.all(4),
+                          constraints: const BoxConstraints.expand(),
+                          decoration: BoxDecoration(border: Border.all()),
+                          child: SingleChildScrollView(
+                            child: ValueListenableBuilder<dynamic>(
+                              valueListenable: result,
+                              builder: (context, value, _) =>
+                                  Text('${value ?? ''}'),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _tagRead() {
+    print('Tag Read');
+
+    NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
+      result.value = tag.data;
+      submitUpdate(tag.data['isodep']['identifier']);
+      NfcManager.instance.stopSession();
+    });
+  }
+}
