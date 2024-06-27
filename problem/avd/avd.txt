@@ -1,0 +1,23 @@
+Misalnya, jika Anda meluncurkan emulator dari dalam Android Studio yang berjalan di Mac, command line defaultnya akan serupa dengan berikut ini:
+
+/Users/janedoe/Library/Android/sdk/emulator/emulator -avd Pixel8_API_34 -netdelay none -netspeed full -qt-hide-window -grpc-use-token -idle-grpc-timeout
+
+List AVD :
+emulator -list-avds
+
+Menginstal aplikasi
+Selain menginstal aplikasi melalui Android Studio atau UI emulator, Anda dapat menginstal aplikasi di perangkat virtual menggunakan utilitas adb.
+
+Agar dapat menggunakan adb untuk menginstal, menjalankan, dan menguji aplikasi Anda, ikuti langkah-langkah umum berikut:
+
+Build dan paketkan aplikasi Anda menjadi APK seperti yang dijelaskan dalam Membangun dan menjalankan aplikasi Anda.
+Mulai emulator dari command line seperti yang dijelaskan di bagian sebelumnya, menggunakan opsi startup apa pun yang diperlukan.
+Instal aplikasi menggunakan adb.
+Jalankan dan uji aplikasi Anda di emulator.
+Selagi emulator berjalan, Anda dapat menggunakan Emulator console untuk memberikan perintah sesuai kebutuhan.
+Untuk meng-uninstal aplikasi, lakukan seperti yang biasa Anda lakukan di perangkat Android.
+
+Perangkat virtual mempertahankan aplikasi dan data statusnya dalam partisi disk data pengguna meskipun perangkat dimulai ulang (userdata-qemu.img). Untuk menghapus data ini, mulai emulator dengan opsi -wipe-data atau hapus total data di AVD Manager. Untuk informasi selengkapnya tentang partisi data pengguna dan penyimpanan lainnya, lihat bagian berikut.
+
+
+Source : https://developer.android.com/studio/run/emulator-commandline?hl=id

@@ -1,0 +1,18 @@
+how to fix this error?
+For mac user: open terminal and execute
+
+cd ~
+
+rm -rf .gradle
+
+For windows user:
+
+Go to the root directory C:\Users\YourUser and locate the hidden .gradle folder and delete it. and then run your app connected to an Android emulator or device, don't cancel and make have a stable internet connection, this will download fresh Gradle
+
+
+source :
+https://stackoverflow.com/questions/73168883/exception-in-thread-main-java-util-zip-zipexception-zip-end-header-not-found
+
+https://stackoverflow.com/questions/67901965/flutter-gradle-task-assembledebug-failed-with-exit-code-1-zip-end-header-not-fou
+
+https://stackoverflow.com/questions/73035288/flutter-exception-in-thread-main-java-util-zip-zipexception-zip-end-header-no
